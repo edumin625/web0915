@@ -1,0 +1,725 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2020-2025년 병역 입영 현황 상세 분석 보고서</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            500: '#334e68',
+                            800: '#102a43',
+                            900: '#0b1b2b',
+                        },
+                        army: '#2e5b37',
+                        airforce: '#1d4ed8',
+                        marine: '#b91c1c'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { background-color: white !important; color: black !important; }
+            .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-600 rounded-lg">
+                    <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-blue-400">국방부·병무청 데이터 기반 심층 분석</span>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight">2020-2025년 병역 입영 현황 상세 분석 보고서</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 no-print self-end md:self-auto">
+                <button onclick="window.print()" class="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium rounded-lg border border-slate-700 transition">
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>인쇄 / PDF 저장</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Executive Summary Header Badge -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-xl border border-slate-700 relative overflow-hidden">
+            <div class="absolute right-0 top-0 translate-x-8 -translate-y-8 opacity-10 pointer-events-none">
+                <i data-lucide="file-text" class="w-96 h-96 text-white"></i>
+            </div>
+            
+            <div class="relative z-10 space-y-4">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-semibold">
+                    <i data-lucide="bookmark" class="w-3.5 h-3.5"></i>
+                    📌 핵심 요약 (Executive Summary)
+                </div>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+                    저출생·인구절벽에 따른 입영 자원 수급 구조의 지각변동
+                </h2>
+                <p class="text-slate-300 leading-relaxed max-w-4xl text-sm md:text-base">
+                    최근 5년간(2020~2025년) 총 입영 자원은 <span class="text-amber-400 font-bold">22.62% 감축</span>되었으며, 감축 인원의 대부분이 <span class="text-rose-400 font-bold">육군(-31.82%)에 집중</span>되었습니다. 한편, 해·공군·해병대의 비중 확대와 더불어 제도 개정에 따른 <span class="text-emerald-400 font-bold">고퇴 이하 학력자 입영 폭증(+216.23%)</span>이 주요 변화로 나타났습니다.
+                </p>
+            </div>
+
+            <!-- KPI Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-700/60 relative z-10">
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+                    <div class="flex items-center justify-between text-slate-400 mb-1">
+                        <span class="text-xs font-medium">전체 입영 자원 감축</span>
+                        <i data-lucide="users-down" class="w-4 h-4 text-rose-400"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-white">-22.62%</div>
+                    <p class="text-xs text-slate-400 mt-1">126,775명 → 98,103명 (-28,672명)</p>
+                </div>
+
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+                    <div class="flex items-center justify-between text-slate-400 mb-1">
+                        <span class="text-xs font-medium">육군 감축 집중도</span>
+                        <i data-lucide="trending-down" class="w-4 h-4 text-rose-400"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-rose-400">97.1%</div>
+                    <p class="text-xs text-slate-400 mt-1">전체 감소량 중 육군이 27,847명 차지</p>
+                </div>
+
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+                    <div class="flex items-center justify-between text-slate-400 mb-1">
+                        <span class="text-xs font-medium">해·공·해병대 점유율</span>
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-blue-400"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-blue-400">39.18%</div>
+                    <p class="text-xs text-slate-400 mt-1">2020년 30.97%에서 8.21%p 확대</p>
+                </div>
+
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700/80">
+                    <div class="flex items-center justify-between text-slate-400 mb-1">
+                        <span class="text-xs font-medium">고퇴 이하 입영자 증가</span>
+                        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-emerald-400">+216.23%</div>
+                    <p class="text-xs text-slate-400 mt-1">154명(2020년) → 487명(2025년)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: 연도별·군별 입영 자원 추이 및 수급 구조 분석 -->
+        <section class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-700">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">1. 연도별·군별 입영 자원 추이 및 수급 구조 분석</h3>
+                    <p class="text-xs text-slate-500">2020년~2025년 군별 입영 수급 불균형 및 자원 변동 분석</p>
+                </div>
+            </div>
+
+            <p class="text-slate-600 text-sm md:text-base leading-relaxed">
+                지난 5년간(2020년~2025년) 대한민국 병역 입영 자원은 인구 절벽 현상과 저출생의 여파로 전반적인 하향 곡선을 그렸습니다. 
+                2020년 126,775명이던 총 입영 인원은 2022년 95,843명으로 최저점을 기록한 후, 2023년~2024년 10만 명 선을 소폭 회복했으나 2025년 다시 98,103명으로 감소하였습니다.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 my-6">
+                <!-- Main Chart -->
+                <div class="lg:col-span-2 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="line-chart" class="w-4 h-4 text-blue-600"></i>
+                            연도별 총 입영 인원 및 군별 추이 (명)
+                        </h4>
+                        <span class="text-xs text-slate-500">2020-2025</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="yearlyTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Donut Comparison -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i>
+                            군별 점유율 비중 변화
+                        </h4>
+                        <p class="text-xs text-slate-500 mb-4">육군 비중 감소 및 해·공·해병대 비중 증가 비교</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <p class="text-xs font-semibold text-center text-slate-600 mb-2">2020년</p>
+                            <div class="h-36">
+                                <canvas id="share2020Chart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-center text-slate-600 mb-2">2025년</p>
+                            <div class="h-36">
+                                <canvas id="share2025Chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-600 space-y-1">
+                        <div class="flex justify-between">
+                            <span>육군 점유율:</span>
+                            <span class="font-bold text-rose-600">69.03% → 60.82% (-8.21%p)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>해·공·해병 점유율:</span>
+                            <span class="font-bold text-blue-600">30.97% → 39.18% (+8.21%p)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table 1 -->
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-sm text-left text-slate-600">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-100 border-b border-slate-200">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900">입영연도</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">육군</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">해군</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">공군</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">해병대</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right bg-slate-200/60">전체 총계</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">전년대비 증감률</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2020년</td>
+                            <td class="px-4 py-3 text-right">87,514명</td>
+                            <td class="px-4 py-3 text-right">8,871명</td>
+                            <td class="px-4 py-3 text-right">17,991명</td>
+                            <td class="px-4 py-3 text-right">12,399명</td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">126,775명</td>
+                            <td class="px-4 py-3 text-right text-slate-400">-</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2021년</td>
+                            <td class="px-4 py-3 text-right">78,900명</td>
+                            <td class="px-4 py-3 text-right">7,764명</td>
+                            <td class="px-4 py-3 text-right">18,578명</td>
+                            <td class="px-4 py-3 text-right">12,863명</td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">118,105명</td>
+                            <td class="px-4 py-3 text-right font-semibold text-rose-600">-6.84%</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2022년</td>
+                            <td class="px-4 py-3 text-right">60,680명</td>
+                            <td class="px-4 py-3 text-right">7,060명</td>
+                            <td class="px-4 py-3 text-right">17,677명</td>
+                            <td class="px-4 py-3 text-right">10,426명</td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">95,843명</td>
+                            <td class="px-4 py-3 text-right font-semibold text-rose-600">-18.85%</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2023년</td>
+                            <td class="px-4 py-3 text-right">64,379명</td>
+                            <td class="px-4 py-3 text-right">7,455명</td>
+                            <td class="px-4 py-3 text-right">19,890명</td>
+                            <td class="px-4 py-3 text-right">10,140명</td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">101,864명</td>
+                            <td class="px-4 py-3 text-right font-semibold text-emerald-600">+6.28%</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2024년</td>
+                            <td class="px-4 py-3 text-right">61,201명</td>
+                            <td class="px-4 py-3 text-right">10,628명</td>
+                            <td class="px-4 py-3 text-right">18,700명</td>
+                            <td class="px-4 py-3 text-right">11,944명</td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">102,473명</td>
+                            <td class="px-4 py-3 text-right font-semibold text-emerald-600">+0.60%</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2025년</td>
+                            <td class="px-4 py-3 text-right">59,667명</td>
+                            <td class="px-4 py-3 text-right">8,577명</td>
+                            <td class="px-4 py-3 text-right">17,772명</td>
+                            <td class="px-4 py-3 text-right">12,087명</td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">98,103명</td>
+                            <td class="px-4 py-3 text-right font-semibold text-rose-600">-4.26%</td>
+                        </tr>
+                        <tr class="bg-slate-100 font-bold text-slate-900">
+                            <td class="px-4 py-3">5개년 증감률</td>
+                            <td class="px-4 py-3 text-right text-rose-600">-31.82%</td>
+                            <td class="px-4 py-3 text-right text-rose-600">-3.31%</td>
+                            <td class="px-4 py-3 text-right text-rose-600">-1.22%</td>
+                            <td class="px-4 py-3 text-right text-rose-600">-2.52%</td>
+                            <td class="px-4 py-3 text-right text-rose-600 bg-slate-200">-22.62%</td>
+                            <td class="px-4 py-3 text-right text-slate-400">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 2: 학력별 입영 자원 구조 변화 및 특이 동향 -->
+        <section class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-700">
+                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">2. 학력별 입영 자원 구조 변화 및 특이 동향</h3>
+                    <p class="text-xs text-slate-500">고학력 중심 입영 구조와 고퇴 이하 학력자 폭증 특이 동향 분석</p>
+                </div>
+            </div>
+
+            <p class="text-slate-600 text-sm md:text-base leading-relaxed">
+                입영 자원의 학력별 구성을 분석한 결과, <span class="font-bold text-slate-900">대학(전문대) 재학 이상 고학력 자원의 비중이 전체의 82%~84%를 유지</span>하며 절대적인 비중을 차지하고 있습니다. 
+                반면 고졸 학력자는 2020년 21,584명(17.03%)에서 2025년 14,686명(14.97%)으로 31.96% 감소했습니다.
+            </p>
+
+            <!-- Callout for Surge in Below HS -->
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl space-y-2">
+                <div class="flex items-center gap-2 text-amber-800 font-bold text-sm">
+                    <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                    특이 동향: 고퇴 이하(중졸 및 고교 중퇴 등) 학력자의 폭증 (+216.23%)
+                </div>
+                <p class="text-xs md:text-sm text-amber-900 leading-relaxed">
+                    2020년 154명(0.12%)에 불과했던 고퇴 이하 입영 인원은 2024년 506명, 2025년 487명(0.50%)으로 5년간 3배 이상 폭증하였습니다. 이는 병역처분 기준 변화(학력 사유 보충역 처분 폐지 등) 및 현역 판정 기준 개정이 주요 원인으로 분석됩니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-6">
+                <!-- Academic Chart -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-purple-600"></i>
+                        학력별 입영 인원 구성 추이 (명)
+                    </h4>
+                    <div class="chart-container">
+                        <canvas id="academicTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Below HS Surge Focus Chart -->
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                    <h4 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i>
+                        고퇴 이하 자원 입영 인원 폭증 추이 (명)
+                    </h4>
+                    <div class="chart-container">
+                        <canvas id="belowHsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table 2 -->
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-sm text-left text-slate-600">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-100 border-b border-slate-200">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900">입영연도</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">대학원</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">대학(전문대)</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">고졸</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right">고퇴이하</th>
+                            <th scope="col" class="px-4 py-3 font-bold text-slate-900 text-right bg-slate-200/60">전체 합계</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2020년</td>
+                            <td class="px-4 py-3 text-right">431명 <span class="text-xs text-slate-400">(0.34%)</span></td>
+                            <td class="px-4 py-3 text-right">104,606명 <span class="text-xs text-slate-400">(82.51%)</span></td>
+                            <td class="px-4 py-3 text-right">21,584명 <span class="text-xs text-slate-400">(17.03%)</span></td>
+                            <td class="px-4 py-3 text-right font-medium text-slate-700">154명 <span class="text-xs text-slate-400">(0.12%)</span></td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">126,775명 (100%)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2021년</td>
+                            <td class="px-4 py-3 text-right">389명 <span class="text-xs text-slate-400">(0.33%)</span></td>
+                            <td class="px-4 py-3 text-right">99,522명 <span class="text-xs text-slate-400">(84.27%)</span></td>
+                            <td class="px-4 py-3 text-right">17,969명 <span class="text-xs text-slate-400">(15.21%)</span></td>
+                            <td class="px-4 py-3 text-right font-medium text-slate-700">225명 <span class="text-xs text-slate-400">(0.19%)</span></td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">118,105명 (100%)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2022년</td>
+                            <td class="px-4 py-3 text-right">315명 <span class="text-xs text-slate-400">(0.33%)</span></td>
+                            <td class="px-4 py-3 text-right">78,878명 <span class="text-xs text-slate-400">(82.30%)</span></td>
+                            <td class="px-4 py-3 text-right">16,334명 <span class="text-xs text-slate-400">(17.04%)</span></td>
+                            <td class="px-4 py-3 text-right font-medium text-slate-700">316명 <span class="text-xs text-slate-400">(0.33%)</span></td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">95,843명 (100%)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2023년</td>
+                            <td class="px-4 py-3 text-right">319명 <span class="text-xs text-slate-400">(0.31%)</span></td>
+                            <td class="px-4 py-3 text-right">84,419명 <span class="text-xs text-slate-400">(82.87%)</span></td>
+                            <td class="px-4 py-3 text-right">16,685명 <span class="text-xs text-slate-400">(16.38%)</span></td>
+                            <td class="px-4 py-3 text-right font-medium text-slate-700">441명 <span class="text-xs text-slate-400">(0.43%)</span></td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">101,864명 (100%)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2024년</td>
+                            <td class="px-4 py-3 text-right">350명 <span class="text-xs text-slate-400">(0.34%)</span></td>
+                            <td class="px-4 py-3 text-right">85,502명 <span class="text-xs text-slate-400">(83.44%)</span></td>
+                            <td class="px-4 py-3 text-right">16,115명 <span class="text-xs text-slate-400">(15.73%)</span></td>
+                            <td class="px-4 py-3 text-right font-medium text-emerald-700 font-bold">506명 <span class="text-xs text-slate-400">(0.49%)</span></td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">102,473명 (100%)</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-3 font-semibold text-slate-900">2025년</td>
+                            <td class="px-4 py-3 text-right">386명 <span class="text-xs text-slate-400">(0.39%)</span></td>
+                            <td class="px-4 py-3 text-right">82,544명 <span class="text-xs text-slate-400">(84.14%)</span></td>
+                            <td class="px-4 py-3 text-right">14,686명 <span class="text-xs text-slate-400">(14.97%)</span></td>
+                            <td class="px-4 py-3 text-right font-medium text-emerald-700 font-bold">487명 <span class="text-xs text-slate-400">(0.50%)</span></td>
+                            <td class="px-4 py-3 text-right font-bold text-slate-900 bg-slate-50">98,103명 (100%)</td>
+                        </tr>
+                        <tr class="bg-slate-100 font-bold text-slate-900">
+                            <td class="px-4 py-3">증감률 (비중 변화)</td>
+                            <td class="px-4 py-3 text-right text-rose-600">-10.44% <span class="text-xs font-normal text-slate-600">(+0.05%p)</span></td>
+                            <td class="px-4 py-3 text-right text-rose-600">-21.09% <span class="text-xs font-normal text-slate-600">(+1.63%p)</span></td>
+                            <td class="px-4 py-3 text-right text-rose-600">-31.96% <span class="text-xs font-normal text-slate-600">(-2.06%p)</span></td>
+                            <td class="px-4 py-3 text-right text-emerald-600 font-extrabold">+216.23% <span class="text-xs font-normal text-slate-600">(+0.38%p)</span></td>
+                            <td class="px-4 py-3 text-right text-rose-600 bg-slate-200">-22.62%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 3: 데이터 분석 기반 정책적 시사점 및 제언 -->
+        <section class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                <div class="p-2 bg-slate-100 rounded-lg text-slate-700">
+                    <i data-lucide="lightbulb" class="w-5 h-5 text-amber-500"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">3. 데이터 분석 기반 정책적 시사점 및 제언</h3>
+                    <p class="text-xs text-slate-500">인구구조 변화 대응을 위한 병무 행정 및 군 구조 개편 과제</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Strategic Card 1 -->
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col justify-between space-y-4 hover:border-blue-300 transition">
+                    <div class="space-y-3">
+                        <div class="p-3 bg-blue-100 text-blue-700 rounded-lg w-fit">
+                            <i data-lucide="crosshair" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base">육군 중심 병무 수급 구조 재편 필요성</h4>
+                        <p class="text-slate-600 text-xs md:text-sm leading-relaxed">
+                            육군 입영 자원의 급격한 감소(-31.82%)는 부대 구조 개편, 병력 절감형 무기 체계 도입, 첨단 과학기술군으로의 속도감 있는 전환을 강력히 요구합니다. 
+                            상대적으로 자원을 유지 중인 해·공군·해병대와의 군별 병력 배분 및 역할 분담 최적화가 병행되어야 합니다.
+                        </p>
+                    </div>
+                    <div class="pt-2 text-xs font-semibold text-blue-600 flex items-center gap-1">
+                        <span>과학기술강군 전환 촉진</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </div>
+                </div>
+
+                <!-- Strategic Card 2 -->
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col justify-between space-y-4 hover:border-emerald-300 transition">
+                    <div class="space-y-3">
+                        <div class="p-3 bg-emerald-100 text-emerald-700 rounded-lg w-fit">
+                            <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base">고퇴 이하 및 복무 취약 계층 관리 체계 강화</h4>
+                        <p class="text-slate-600 text-xs md:text-sm leading-relaxed">
+                            고퇴 이하 현역 입영 자원이 216.23% 폭증함에 따라, 병영 생활 적응 지원 프로그램, 맞춤형 교육훈련, 부대 적응 코칭 체계 확충이 필수적입니다. 
+                            복무 이탈 예방 및 건강한 병영 환경 조성을 위한 제도적 보완이 시급합니다.
+                        </p>
+                    </div>
+                    <div class="pt-2 text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                        <span>맞춤형 적응 프로그램 확충</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </div>
+                </div>
+
+                <!-- Strategic Card 3 -->
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col justify-between space-y-4 hover:border-purple-300 transition">
+                    <div class="space-y-3">
+                        <div class="p-3 bg-purple-100 text-purple-700 rounded-lg w-fit">
+                            <i data-lucide="calendar" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base">대학생/전문대생 맞춤형 입영 스케줄링</h4>
+                        <p class="text-slate-600 text-xs md:text-sm leading-relaxed">
+                            전체 입영 자원의 84.14%가 대학(전문대) 재학생인 만큼, 학무 일정 및 복학 시기와 연계된 입영 유연화 제도와 데이터 기반의 상시 입영 지원 시스템 고도화가 지속되어야 합니다.
+                        </p>
+                    </div>
+                    <div class="pt-2 text-xs font-semibold text-purple-600 flex items-center gap-1">
+                        <span>유연한 입영 스케줄링 구축</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs space-y-2">
+            <p class="font-medium text-slate-300">국방부 / 병무청 입영 현황 데이터 기반 심층 분석 리포트</p>
+            <p class="text-slate-500">본 보고서는 2020년부터 2025년까지의 공식 입영 통계를 바탕으로 작성된 웹 분석 보고서입니다.</p>
+        </div>
+    </footer>
+
+    <!-- Chart Script -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Color Palette
+        const COLORS = {
+            army: '#2e5b37',
+            navy: '#0284c7',
+            airforce: '#2563eb',
+            marine: '#dc2626',
+            total: '#0f172a',
+            grad: '#8b5cf6',
+            univ: '#3b82f6',
+            high: '#f59e0b',
+            belowHigh: '#10b981'
+        };
+
+        const years = ['2020년', '2021년', '2022년', '2023년', '2024년', '2025년'];
+
+        // Chart 1: Yearly Trend
+        const ctxYearly = document.getElementById('yearlyTrendChart').getContext('2d');
+        new Chart(ctxYearly, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '전체 총계',
+                        data: [126775, 118105, 95843, 101864, 102473, 98103],
+                        borderColor: COLORS.total,
+                        backgroundColor: COLORS.total,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        tension: 0.2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '육군',
+                        data: [87514, 78900, 60680, 64379, 61201, 59667],
+                        borderColor: COLORS.army,
+                        backgroundColor: COLORS.army,
+                        borderWidth: 2,
+                        tension: 0.2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '공군',
+                        data: [17991, 18578, 17677, 19890, 18700, 17772],
+                        borderColor: COLORS.airforce,
+                        backgroundColor: COLORS.airforce,
+                        borderWidth: 2,
+                        borderDash: [4, 4],
+                        tension: 0.2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '해병대',
+                        data: [12399, 12863, 10426, 10140, 11944, 12087],
+                        borderColor: COLORS.marine,
+                        backgroundColor: COLORS.marine,
+                        borderWidth: 2,
+                        borderDash: [4, 4],
+                        tension: 0.2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '해군',
+                        data: [8871, 7764, 7060, 7455, 10628, 8577],
+                        borderColor: COLORS.navy,
+                        backgroundColor: COLORS.navy,
+                        borderWidth: 2,
+                        borderDash: [4, 4],
+                        tension: 0.2,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw.toLocaleString()}명`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: value => (value / 10000).toFixed(1) + '만명'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 2 & 3: Donut Share Comparisons
+        const donutOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}%`;
+                        }
+                    }
+                }
+            },
+            cutout: '65%'
+        };
+
+        new Chart(document.getElementById('share2020Chart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['육군', '해군', '공군', '해병대'],
+                datasets: [{
+                    data: [69.03, 7.00, 14.19, 9.78],
+                    backgroundColor: [COLORS.army, COLORS.navy, COLORS.airforce, COLORS.marine]
+                }]
+            },
+            options: donutOptions
+        });
+
+        new Chart(document.getElementById('share2025Chart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['육군', '해군', '공군', '해병대'],
+                datasets: [{
+                    data: [60.82, 8.74, 18.12, 12.32],
+                    backgroundColor: [COLORS.army, COLORS.navy, COLORS.airforce, COLORS.marine]
+                }]
+            },
+            options: donutOptions
+        });
+
+        // Chart 4: Academic Breakdown Trend
+        new Chart(document.getElementById('academicTrendChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: '대학(전문대)',
+                        data: [104606, 99522, 78878, 84419, 85502, 82544],
+                        backgroundColor: COLORS.univ
+                    },
+                    {
+                        label: '고졸',
+                        data: [21584, 17969, 16334, 16685, 16115, 14686],
+                        backgroundColor: COLORS.high
+                    },
+                    {
+                        label: '대학원',
+                        data: [431, 389, 315, 319, 350, 386],
+                        backgroundColor: COLORS.grad
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true },
+                    y: { 
+                        stacked: true,
+                        ticks: { callback: value => (value / 10000).toFixed(1) + '만명' }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.raw.toLocaleString()}명`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 5: Below HS Surge Focus
+        new Chart(document.getElementById('belowHsChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: '고퇴 이하 입영 인원 (명)',
+                    data: [154, 225, 316, 441, 506, 487],
+                    borderColor: '#059669',
+                    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#059669'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `입영 인원: ${context.raw}명 (${context.dataIndex === 0 ? '기준년도' : '+' + (((context.raw - 154) / 154) * 100).toFixed(1) + '%'})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 100 }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+```
